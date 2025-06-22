@@ -19,14 +19,9 @@ class DocumentController extends Controller
 
         // Add a secure, temporary download URL to each document object.
         $documents->each(function ($document) {
-            if ($document->s3_url) {
-                $document->download_url = Storage::disk('s3')->temporaryUrl(
-                    $document->s3_url,
-                    now()->addMinutes(10)
-                );
-            } else {
-                $document->download_url = '#';
-            }
+            $document->download_url = $document->s3_url
+                ? Storage::disk('s3')->temporaryUrl($document->s3_url, now()->addMinutes(10))
+                : '#';
         });
 
         return view('documents.index', compact('documents'));
